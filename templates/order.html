@@ -1,0 +1,72 @@
+<html>
+  <head>
+    {% load static %}
+    <title>Order Page</title>
+    <script src="https://js.stripe.com/v2/"></script>
+    <script src="{% static 'js/cookies_watcher.js' %}"></script>
+    <script src="{% static 'js/item.js' %}"></script>
+      {{ data|json_script:"data" }}
+      
+  </head>
+  <body>
+    <header>
+      {% include 'nav.html' %}
+    </header>
+    <div class="items-box"></div>
+    <div class="order-box"></div>
+    <script type="text/javascript">
+      
+        var itemBox = document.getElementsByClassName('items-box')[0];
+        const data = JSON.parse(document.getElementById('data').textContent);
+        var items = data.items;
+        console.log(items);
+        for (var i = 0; i < items.length; i++) {
+          var itemCard = fillOrderItemCard(items[i]);
+          itemBox.append(itemCard);
+        };
+
+        var priceDetail = data.orderPriceDetail;
+        var itemBox = document.getElementsByClassName('items-box')[0];
+        
+
+        var orderBox = document.getElementsByClassName('order-box')[0];
+
+        var oldPrice = priceDetail.orderFinalPrice + priceDetail.orderDiscAllSum;
+
+        var oldOrderPriceHTML = document.createElement('p');
+        oldOrderPriceHTML.innerHTML = 'old price: <s>' + oldPrice / 100 + ' ' + data.orderCurrency + '</s>';
+        oldOrderPriceHTML.className = 'old-order-price';
+
+        var allDiscount = document.createElement('p');
+        allDiscount.innerText = 'all discount: ' + priceDetail.orderDiscAllSum / 100 + ' ' + data.orderCurrency + ' ' + priceDetail.orderDiscAllVal + '%';
+        allDiscount.className = 'all-order-discount';
+
+        var allTax = document.createElement('p');
+        allTax.innerText = 'all tax: ' + priceDetail.orderTaxAllSum / 100 + ' ' + data.orderCurrency + ' ' + priceDetail.orderTaxAllVal + '%';
+        allTax.className = 'all-order-tax';
+
+        var orderPriceHTML = document.createElement('p');
+        orderPriceHTML.innerText = 'price: ' + priceDetail.orderFinalPrice / 100 + data.orderCurrency;
+        orderPriceHTML.className = 'order-price';
+
+        
+        var orderForm = document.createElement('form');
+        orderForm.setAttribute('action', '/buy/');
+
+        var makeOrderButton = document.createElement('button');
+        makeOrderButton.innerText = 'Order';
+        makeOrderButton.className = 'make-order-button';
+        makeOrderButton.setAttribute('type', 'submit')
+
+        orderForm.append(makeOrderButton);
+        if (priceDetail.orderDiscAllSum != 0) {
+          orderBox.append(oldOrderPriceHTML, allDiscount);
+        };
+        if (priceDetail.orderTaxAllSum != 0) {
+          orderBox.append(allTax);
+        };
+        orderBox.append(orderPriceHTML);
+        orderBox.append(orderForm);
+</script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+<html>
+<head>
+  {% load static %}
+  <title>Item</title>
+  <script src="{% static 'js/cookies_watcher.js' %}"></script>
+  <script src="{% static 'js/item.js' %}"></script>
+  {{ data|json_script:"data" }}
+</head>
+<body>
+  <header>
+    {% include 'nav.html' %}
+  </header>
+  <script>
+    const data = JSON.parse(document.getElementById('data').textContent);
+    fillItemCard(data);
+  </script>
+</body>
+</html>
